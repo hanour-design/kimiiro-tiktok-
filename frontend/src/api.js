@@ -6,9 +6,10 @@
  */
 
 const STORAGE_KEY = 'kimiiro_gas_url';
+const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbzsBss6H_YknWEQ9UgaXfHgfMdkvPLX5yWn4Rs_QzZ6AYuGtZcmSAuWc-L0mJC3qY3A3A/exec';
 
 export function getGasUrl() {
-  return localStorage.getItem(STORAGE_KEY) || '';
+  return localStorage.getItem(STORAGE_KEY) || DEFAULT_GAS_URL;
 }
 
 export function setGasUrl(url) {
