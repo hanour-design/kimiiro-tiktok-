@@ -32,8 +32,19 @@ export default function Dashboard() {
     setLoading(true);
     try {
       const data = await api.getDashboard();
-      setStats(data.stats);
-      setAllCharacters(data.characters);
+      if (data && data.stats) {
+        setStats(data.stats);
+        setAllCharacters(data.characters || []);
+      } else if (data && data.error) {
+        console.error('API error:', data.error);
+        // フォールバック: 旧エンドポイントを試行
+        const [statsData, charsData] = await Promise.all([
+          api.getStats(),
+          api.getCharacters('all'),
+        ]);
+        setStats(statsData);
+        setAllCharacters(Array.isArray(charsData) ? charsData : []);
+      }
     } catch (err) {
       console.error(err);
     }

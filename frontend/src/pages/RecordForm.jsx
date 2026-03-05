@@ -20,7 +20,9 @@ export default function RecordForm() {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    api.getCharacters('all').then(setCharacters);
+    api.getCharacters('all').then(data => {
+      setCharacters(Array.isArray(data) ? data : []);
+    }).catch(err => console.error(err));
   }, []);
 
   useEffect(() => {
