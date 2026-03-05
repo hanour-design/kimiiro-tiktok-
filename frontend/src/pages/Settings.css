@@ -1,0 +1,142 @@
+.settings-page {
+  max-width: 720px;
+  margin: 0 auto;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.settings-card {
+  background: var(--white);
+  border-radius: 10px;
+  padding: 28px 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.settings-subtitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.settings-desc {
+  font-size: 13px;
+  color: var(--sub);
+  margin-bottom: 16px;
+  line-height: 1.8;
+}
+.settings-desc code {
+  background: var(--bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.url-input-group {
+  margin-bottom: 16px;
+}
+
+.url-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: 'Noto Sans JP', sans-serif;
+  color: var(--text);
+  transition: border-color 0.2s;
+}
+.url-input:focus {
+  outline: none;
+  border-color: var(--pink);
+  box-shadow: 0 0 0 3px rgba(230, 74, 120, 0.1);
+}
+
+.settings-actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+.btn-pink {
+  background: var(--pink);
+  color: var(--white);
+}
+.btn-pink:hover {
+  background: var(--pink-hover);
+}
+.btn-outline {
+  background: var(--white);
+  color: var(--pink);
+  border: 1px solid var(--pink);
+}
+.btn-outline:hover {
+  background: var(--pink-light);
+}
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.settings-result {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 24px;
+}
+.settings-result.success {
+  background: #E8F8EE;
+  border: 1px solid var(--green);
+  color: #1B8C4E;
+}
+.settings-result.error {
+  background: #FFF0F0;
+  border: 1px solid var(--red);
+  color: var(--red);
+}
+
+.setup-guide {
+  border-top: 1px solid var(--line);
+  padding-top: 24px;
+  margin-top: 8px;
+}
+
+.setup-guide ol {
+  padding-left: 20px;
+  font-size: 14px;
+  line-height: 2;
+  color: var(--text);
+}
+.setup-guide li {
+  margin-bottom: 4px;
+}
+.setup-guide ul {
+  padding-left: 20px;
+  list-style: disc;
+}
+.setup-guide code {
+  background: var(--bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+.setup-guide a {
+  color: var(--pink);
+  font-weight: 500;
+}

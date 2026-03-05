@@ -1,36 +1,78 @@
-const API_BASE = '/api';
+/**
+ * Google Apps Script Web App API クライアント
+ *
+ * GAS のデプロイURLを localStorage に保存し、
+ * そこに対してリクエストを送る。
+ */
 
-async function request(url, options = {}) {
-  const res = await fetch(`${API_BASE}${url}`, {
-    headers: { 'Content-Type': 'application/json' },
-    ...options,
+const STORAGE_KEY = 'kimiiro_gas_url';
+
+export function getGasUrl() {
+  return localStorage.getItem(STORAGE_KEY) || '';
+}
+
+export function setGasUrl(url) {
+  localStorage.setItem(STORAGE_KEY, url);
+}
+
+export function isConfigured() {
+  return !!getGasUrl();
+}
+
+async function gasGet(params) {
+  const url = getGasUrl();
+  if (!url) throw new Error('APIのURLが設定されていません。設定画面でURLを入力してください。');
+
+  const query = new URLSearchParams(params).toString();
+  const res = await fetch(`${url}?${query}`, {
+    method: 'GET',
+    redirect: 'follow',
   });
+
   if (!res.ok) {
-    const err = await res.json().catch(() => ({ error: 'エラーが発生しました' }));
-    throw new Error(err.error || 'エラーが発生しました');
+    throw new Error('APIエラーが発生しました');
+  }
+  return res.json();
+}
+
+async function gasPost(body) {
+  const url = getGasUrl();
+  if (!url) throw new Error('APIのURLが設定されていません。設定画面でURLを入力してください。');
+
+  const res = await fetch(url, {
+    method: 'POST',
+    redirect: 'follow',
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    throw new Error('APIエラーが発生しました');
   }
   return res.json();
 }
 
 export const api = {
   // Characters
-  getCharacters: (status) => request(`/characters${status ? `?status=${status}` : ''}`),
-  getCharacter: (id) => request(`/characters/${id}`),
-  createCharacter: (data) => request('/characters', { method: 'POST', body: JSON.stringify(data) }),
-  updateCharacter: (id, data) => request(`/characters/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-  deleteCharacter: (id) => request(`/characters/${id}`, { method: 'DELETE' }),
+  getCharacters: (status) => gasGet({ action: 'characters', status: status || '' }),
+  getCharacter: (id) => gasGet({ action: 'character', id }),
+  createCharacter: (data) => gasPost({ action: 'createCharacter', data }),
+  updateCharacter: (id, data) => gasPost({ action: 'updateCharacter', id, data }),
+  deleteCharacter: (id) => gasPost({ action: 'deleteCharacter', id }),
 
   // Records
-  getRecords: (charId, limit) => request(`/characters/${charId}/records${limit ? `?limit=${limit}` : ''}`),
-  createRecord: (data) => request('/records', { method: 'POST', body: JSON.stringify(data) }),
+  getRecords: (charId, limit) => gasGet({ action: 'records', character_id: charId, limit: limit || '' }),
+  createRecord: (data) => gasPost({ action: 'createRecord', data }),
 
   // Stats & Rankings
-  getStats: () => request('/stats'),
-  getRankings: (period) => request(`/rankings?period=${period || 'week'}`),
+  getStats: () => gasGet({ action: 'stats' }),
+  getRankings: (period) => gasGet({ action: 'rankings', period: period || 'week' }),
 
   // Export
-  exportCsv: () => `${API_BASE}/export/csv`,
+  exportCsv: () => {
+    const url = getGasUrl();
+    return url ? `${url}?action=export` : '#';
+  },
 
   // Seed
-  seed: () => request('/seed', { method: 'POST' }),
+  seed: () => gasPost({ action: 'seed' }),
 };

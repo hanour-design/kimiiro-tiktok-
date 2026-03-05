@@ -23,7 +23,6 @@ export default function Dashboard() {
   const [filter, setFilter] = useState('運用中');
   const [sortBy, setSortBy] = useState('followers');
   const [loading, setLoading] = useState(true);
-  const [seeding, setSeeding] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -44,17 +43,6 @@ export default function Dashboard() {
     setLoading(false);
   }
 
-  async function handleSeed() {
-    setSeeding(true);
-    try {
-      await api.seed();
-      await loadData();
-    } catch (err) {
-      console.error(err);
-    }
-    setSeeding(false);
-  }
-
   const sorted = [...characters].sort((a, b) => {
     if (sortBy === 'followers') return (b.latest_followers || 0) - (a.latest_followers || 0);
     if (sortBy === 'rate') return parseFloat(b.change_rate || 0) - parseFloat(a.change_rate || 0);
@@ -70,10 +58,7 @@ export default function Dashboard() {
     <div className="dashboard">
       {stats && stats.totalAccounts === 0 && (
         <div className="seed-banner">
-          <p>データがありません。サンプルデータを投入しますか？</p>
-          <button onClick={handleSeed} disabled={seeding} className="btn btn-pink">
-            {seeding ? '投入中...' : 'サンプルデータを投入'}
-          </button>
+          <p>データがありません。<Link to="/settings">設定画面</Link>からサンプルデータを投入できます。</p>
         </div>
       )}
 
