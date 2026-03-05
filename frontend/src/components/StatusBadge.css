@@ -1,0 +1,23 @@
+.status-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.status-green {
+  background: #E8F8EE;
+  color: #1B8C4E;
+}
+
+.status-yellow {
+  background: #FFF8E1;
+  color: #B8860B;
+}
+
+.status-gray {
+  background: #F0F0F0;
+  color: #888;
+}

@@ -1,0 +1,16 @@
+.footer {
+  margin-top: auto;
+}
+
+.footer-inner {
+  text-align: center;
+  padding: 16px 20px;
+  color: var(--sub);
+  font-size: 12px;
+}
+
+.footer-line {
+  height: 6px;
+  background: var(--pink);
+  width: 100%;
+}

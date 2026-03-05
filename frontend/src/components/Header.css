@@ -1,0 +1,100 @@
+.header {
+  background: var(--white);
+  border-bottom: 3px solid var(--pink);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+}
+.header-logo:hover {
+  color: var(--text);
+}
+
+.logo-mark {
+  width: 40px;
+  height: 40px;
+  background: var(--pink);
+  color: var(--white);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 20px;
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.logo-title {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.logo-subtitle {
+  font-size: 11px;
+  color: var(--sub);
+}
+
+.header-nav {
+  display: flex;
+  gap: 4px;
+}
+
+.nav-link {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--sub);
+  transition: all 0.2s;
+}
+.nav-link:hover {
+  background: var(--pink-light);
+  color: var(--pink);
+}
+.nav-link.active {
+  background: var(--pink);
+  color: var(--white);
+}
+.nav-link.active:hover {
+  background: var(--pink-hover);
+  color: var(--white);
+}
+
+@media (max-width: 768px) {
+  .header-inner {
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px 12px;
+  }
+  .header-nav {
+    width: 100%;
+    overflow-x: auto;
+    gap: 2px;
+  }
+  .nav-link {
+    padding: 6px 12px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+}

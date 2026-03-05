@@ -1,0 +1,11 @@
+{
+  "name": "kimiiro-tiktok-dashboard",
+  "version": "1.0.0",
+  "description": "キミイロ TikTok成長ダッシュボード",
+  "scripts": {
+    "backend": "cd backend && node server.js",
+    "frontend": "cd frontend && npm run dev",
+    "dev": "echo 'Run backend and frontend in separate terminals:\n  npm run backend\n  npm run frontend'"
+  },
+  "private": true
+}

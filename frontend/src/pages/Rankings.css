@@ -1,0 +1,147 @@
+.rankings-page {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.back-link {
+  display: inline-block;
+  font-size: 13px;
+  color: var(--sub);
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+.back-link:hover {
+  color: var(--pink);
+}
+
+.period-select {
+  background: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.4);
+  color: var(--white);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: 'Noto Sans JP', sans-serif;
+}
+.period-select option {
+  color: var(--text);
+}
+
+.rankings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ranking-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--white);
+  padding: 16px 20px;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s;
+}
+.ranking-item:hover {
+  transform: translateX(4px);
+}
+
+.rank-gold {
+  border-left: 4px solid #FFD700;
+}
+.rank-silver {
+  border-left: 4px solid #C0C0C0;
+}
+.rank-bronze {
+  border-left: 4px solid #CD7F32;
+}
+
+.rank-number {
+  width: 40px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.rank-medal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-weight: 900;
+  font-size: 16px;
+  color: var(--white);
+}
+.medal-gold { background: linear-gradient(135deg, #FFD700, #FFA500); }
+.medal-silver { background: linear-gradient(135deg, #C0C0C0, #A0A0A0); }
+.medal-bronze { background: linear-gradient(135deg, #CD7F32, #B87333); }
+
+.rank-num {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--sub);
+}
+
+.rank-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.rank-name {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--text);
+}
+.rank-name:hover {
+  color: var(--pink);
+}
+
+.rank-tiktok {
+  font-size: 12px;
+  color: var(--sub);
+}
+
+.rank-stats {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.rank-gain {
+  font-family: 'Arial Black', 'Noto Sans JP', sans-serif;
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--green);
+}
+
+.rank-rate {
+  font-size: 13px;
+  color: var(--green);
+  font-weight: 500;
+}
+
+.period-label {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 12px;
+  color: var(--sub);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: var(--sub);
+  background: var(--white);
+  border-radius: 10px;
+}
+
+.loading {
+  text-align: center;
+  padding: 60px;
+  color: var(--sub);
+}

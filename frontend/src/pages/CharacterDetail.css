@@ -1,0 +1,213 @@
+.detail-page {
+  animation: fadeIn 0.3s ease;
+}
+
+.back-link {
+  display: inline-block;
+  font-size: 13px;
+  color: var(--sub);
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+.back-link:hover {
+  color: var(--pink);
+}
+
+.detail-header {
+  background: var(--white);
+  border-left: 4px solid var(--pink);
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.detail-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.detail-name {
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.detail-tiktok-id {
+  color: var(--sub);
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.detail-display-name {
+  color: var(--sub);
+  font-size: 13px;
+}
+
+.detail-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.stat-item {
+  background: var(--white);
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.stat-value {
+  font-family: 'Arial Black', 'Noto Sans JP', sans-serif;
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--text);
+}
+.stat-value.positive { color: var(--green); }
+.stat-value.negative { color: var(--red); }
+
+.stat-label {
+  font-size: 12px;
+  color: var(--sub);
+  margin-top: 4px;
+}
+
+.detail-actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.btn {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-block;
+}
+.btn-pink {
+  background: var(--pink);
+  color: var(--white);
+}
+.btn-pink:hover {
+  background: var(--pink-hover);
+  color: var(--white);
+}
+.btn-outline {
+  background: var(--white);
+  color: var(--pink);
+  border: 1px solid var(--pink);
+}
+.btn-outline:hover {
+  background: var(--pink-light);
+  color: var(--pink);
+}
+
+.period-select {
+  background: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.4);
+  color: var(--white);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: 'Noto Sans JP', sans-serif;
+}
+.period-select option {
+  color: var(--text);
+}
+
+.chart-container {
+  background: var(--white);
+  border-radius: 10px;
+  padding: 20px 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  margin-bottom: 8px;
+}
+
+.section-gap {
+  height: 16px;
+}
+
+.records-list {
+  background: var(--white);
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+.records-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.records-table th {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--sub);
+  border-bottom: 2px solid var(--line);
+}
+.records-table td {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--line);
+}
+.records-table tbody tr:last-child td {
+  border-bottom: none;
+}
+.records-table .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.records-table .positive { color: var(--green); font-weight: 500; }
+.records-table .negative { color: var(--red); font-weight: 500; }
+.records-table .memo { color: var(--sub); font-size: 13px; }
+
+.show-more-btn {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background: none;
+  border: none;
+  border-top: 1px solid var(--line);
+  color: var(--pink);
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+}
+.show-more-btn:hover {
+  background: var(--pink-light);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: var(--sub);
+}
+
+.loading {
+  text-align: center;
+  padding: 60px;
+  color: var(--sub);
+}
+
+@media (max-width: 768px) {
+  .detail-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .stat-value {
+    font-size: 18px;
+  }
+  .detail-actions {
+    flex-direction: column;
+  }
+  .btn {
+    text-align: center;
+  }
+}

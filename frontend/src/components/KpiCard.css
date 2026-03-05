@@ -1,0 +1,39 @@
+.kpi-card {
+  background: var(--white);
+  border-radius: 12px;
+  padding: 20px 24px;
+  border-left: 4px solid var(--pink);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  text-align: center;
+  min-width: 0;
+}
+
+.kpi-value {
+  font-family: 'Arial Black', 'Noto Sans JP', sans-serif;
+  font-size: 36px;
+  font-weight: 900;
+  color: var(--text);
+  line-height: 1.1;
+}
+
+.kpi-label {
+  font-size: 13px;
+  color: var(--sub);
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.kpi-sub {
+  font-size: 12px;
+  color: var(--pink);
+  margin-top: 2px;
+}
+
+@media (max-width: 768px) {
+  .kpi-card {
+    padding: 14px 16px;
+  }
+  .kpi-value {
+    font-size: 24px;
+  }
+}

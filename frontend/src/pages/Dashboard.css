@@ -1,0 +1,169 @@
+.dashboard {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.section-gap {
+  height: 24px;
+}
+
+.seed-banner {
+  background: var(--pink-light);
+  border: 1px solid var(--pink);
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-pink {
+  background: var(--pink);
+  color: var(--white);
+}
+.btn-pink:hover {
+  background: var(--pink-hover);
+}
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.filter-bar {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.filter-group label {
+  font-size: 13px;
+  color: var(--sub);
+  font-weight: 500;
+}
+.filter-group select {
+  font-family: 'Noto Sans JP', sans-serif;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-size: 13px;
+  background: var(--white);
+  color: var(--text);
+}
+
+.char-table-wrapper {
+  overflow-x: auto;
+  background: var(--white);
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.char-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.char-table th {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--sub);
+  border-bottom: 2px solid var(--line);
+  white-space: nowrap;
+}
+.char-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+}
+.char-table tbody tr:last-child td {
+  border-bottom: none;
+}
+.char-table tbody tr:hover {
+  background: var(--pink-light);
+}
+.char-table .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.char-table .positive {
+  color: var(--green);
+  font-weight: 500;
+}
+.char-table .negative {
+  color: var(--red);
+  font-weight: 500;
+}
+
+.char-name-link {
+  font-weight: 700;
+  color: var(--text);
+}
+.char-name-link:hover {
+  color: var(--pink);
+}
+
+.tiktok-id {
+  color: var(--sub);
+  font-size: 13px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: var(--sub);
+  background: var(--white);
+  border-radius: 10px;
+}
+
+.loading {
+  text-align: center;
+  padding: 60px;
+  color: var(--sub);
+  font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .char-table th,
+  .char-table td {
+    padding: 10px 10px;
+    font-size: 13px;
+  }
+}
