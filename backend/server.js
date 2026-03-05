@@ -325,6 +325,14 @@ app.post('/api/seed', (req, res) => {
   res.json({ message: 'サンプルデータを投入しました' });
 });
 
-app.listen(PORT, () => {
+// ─── Serve frontend static files ───
+
+const frontendDist = path.join(__dirname, '..', 'frontend', 'dist');
+app.use(express.static(frontendDist));
+app.get('/{*splat}', (req, res) => {
+  res.sendFile(path.join(frontendDist, 'index.html'));
+});
+
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`キミイロ TikTok Dashboard API running on http://localhost:${PORT}`);
 });
