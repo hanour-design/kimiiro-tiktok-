@@ -73,11 +73,12 @@ function jsonResponse(data) {
 // ─── GET リクエスト処理 ───
 
 function doGet(e) {
-  initSheets();
   const action = e.parameter.action || 'stats';
 
   try {
     switch (action) {
+      case 'dashboard':
+        return jsonResponse(getDashboard(e.parameter.status));
       case 'characters':
         return jsonResponse(getCharacters(e.parameter.status));
       case 'character':
@@ -101,7 +102,6 @@ function doGet(e) {
 // ─── POST リクエスト処理 ───
 
 function doPost(e) {
-  initSheets();
   const body = JSON.parse(e.postData.contents);
   const action = body.action;
 
@@ -123,6 +123,65 @@ function doPost(e) {
   } catch (err) {
     return jsonResponse({ error: err.message });
   }
+}
+
+// ─── Dashboard (stats + characters を1回のシート読み込みで返す) ───
+
+function getDashboard() {
+  const chars = sheetToArray(getSheet('Characters'));
+  const records = sheetToArray(getSheet('Records'));
+
+  // Build record lookup by character_id (1回だけ走査)
+  const recordsByChar = {};
+  records.forEach(r => {
+    if (!recordsByChar[r.character_id]) recordsByChar[r.character_id] = [];
+    recordsByChar[r.character_id].push(r);
+  });
+  // Sort each group once
+  for (const key in recordsByChar) {
+    recordsByChar[key].sort((a, b) => String(b.record_date).localeCompare(String(a.record_date)));
+  }
+
+  let totalFollowers = 0;
+  let weeklyGain = 0;
+  const activeAccounts = chars.filter(c => c.status === '運用中').length;
+
+  const characters = chars.map(c => {
+    const charRecords = recordsByChar[c.id] || [];
+    const latest = charRecords[0];
+    const prev = charRecords[1];
+    const first = charRecords[charRecords.length - 1];
+
+    const latestFollowers = latest ? Number(latest.follower_count) : 0;
+    const prevFollowers = prev ? Number(prev.follower_count) : 0;
+    const firstFollowers = first ? Number(first.follower_count) : 0;
+    const change = latestFollowers - prevFollowers;
+    const changeRate = prevFollowers > 0 ? ((change / prevFollowers) * 100).toFixed(1) : '0';
+
+    totalFollowers += latestFollowers;
+    if (latest && prev) weeklyGain += change;
+
+    return {
+      ...c,
+      latest_followers: latestFollowers,
+      prev_followers: prevFollowers,
+      first_followers: firstFollowers,
+      latest_record_date: latest ? latest.record_date : '',
+      change: change,
+      change_rate: changeRate,
+      total_gained: latestFollowers - firstFollowers,
+    };
+  }).sort((a, b) => b.latest_followers - a.latest_followers);
+
+  return {
+    stats: {
+      totalAccounts: chars.length,
+      activeAccounts: activeAccounts,
+      totalFollowers: totalFollowers,
+      weeklyGain: weeklyGain,
+    },
+    characters: characters,
+  };
 }
 
 // ─── Characters ───
@@ -399,6 +458,7 @@ function exportCsv() {
 // ─── サンプルデータ投入 ───
 
 function seedData() {
+  initSheets();
   const chars = sheetToArray(getSheet('Characters'));
   if (chars.length > 0) {
     return { message: 'データは既に存在します' };
