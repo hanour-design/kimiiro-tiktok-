@@ -6,13 +6,12 @@ import CharacterDetail from './pages/CharacterDetail';
 import CharacterForm from './pages/CharacterForm';
 import RecordForm from './pages/RecordForm';
 import Rankings from './pages/Rankings';
-import Settings from './pages/Settings';
 import { isConfigured } from './api';
 import './App.css';
 
 function RequireSetup({ children }) {
   if (!isConfigured()) {
-    return <Navigate to="/settings" replace />;
+    return <div style={{padding:'2rem',textAlign:'center'}}>APIのURLが設定されていません。</div>;
   }
   return children;
 }
@@ -24,7 +23,6 @@ function App() {
         <Header />
         <main className="main-content">
           <Routes>
-            <Route path="/settings" element={<Settings />} />
             <Route path="/" element={<RequireSetup><Dashboard /></RequireSetup>} />
             <Route path="/characters/new" element={<RequireSetup><CharacterForm /></RequireSetup>} />
             <Route path="/characters/:id" element={<RequireSetup><CharacterDetail /></RequireSetup>} />
