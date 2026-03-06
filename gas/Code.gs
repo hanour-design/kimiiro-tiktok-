@@ -139,7 +139,7 @@ function getDashboard() {
   });
   // Sort each group once
   for (const key in recordsByChar) {
-    recordsByChar[key].sort((a, b) => String(b.record_date).localeCompare(String(a.record_date)));
+    recordsByChar[key].sort((a, b) => new Date(b.record_date) - new Date(a.record_date));
   }
 
   let totalFollowers = 0;
@@ -198,7 +198,7 @@ function getCharacters(statusFilter) {
   return filtered.map(c => {
     const charRecords = records
       .filter(r => r.character_id === c.id)
-      .sort((a, b) => String(b.record_date).localeCompare(String(a.record_date)));
+      .sort((a, b) => new Date(b.record_date) - new Date(a.record_date));
 
     const latest = charRecords[0];
     const prev = charRecords[1];
@@ -313,7 +313,7 @@ function deleteCharacter(id) {
 function getRecords(characterId, limit) {
   const records = sheetToArray(getSheet('Records'))
     .filter(r => r.character_id === characterId)
-    .sort((a, b) => String(b.record_date).localeCompare(String(a.record_date)));
+    .sort((a, b) => new Date(b.record_date) - new Date(a.record_date));
 
   const result = (limit ? records.slice(0, Number(limit)) : records).map((r, i, arr) => {
     const prev = arr[i + 1];
@@ -383,7 +383,7 @@ function getStats() {
   chars.forEach(c => {
     const charRecords = records
       .filter(r => r.character_id === c.id)
-      .sort((a, b) => String(b.record_date).localeCompare(String(a.record_date)));
+      .sort((a, b) => new Date(b.record_date) - new Date(a.record_date));
 
     const latest = charRecords[0];
     const prev = charRecords[1];
@@ -405,7 +405,7 @@ function getRankings(period) {
   const rankings = chars.map(c => {
     const charRecords = records
       .filter(r => r.character_id === c.id)
-      .sort((a, b) => String(b.record_date).localeCompare(String(a.record_date)));
+      .sort((a, b) => new Date(b.record_date) - new Date(a.record_date));
 
     if (charRecords.length < 2) {
       return { ...c, gain: 0, gain_rate: 0 };
@@ -439,7 +439,7 @@ function getRankings(period) {
 function exportCsv() {
   const chars = sheetToArray(getSheet('Characters'));
   const records = sheetToArray(getSheet('Records'))
-    .sort((a, b) => String(b.record_date).localeCompare(String(a.record_date)));
+    .sort((a, b) => new Date(b.record_date) - new Date(a.record_date));
 
   let csv = 'キャラクター名,TikTokID,記録日,フォロワー数,メモ\n';
   records.forEach(r => {
