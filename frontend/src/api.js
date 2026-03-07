@@ -7,7 +7,7 @@
  */
 
 const STORAGE_KEY = 'kimiiro_gas_url';
-const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbzsBss6H_YknWEQ9UgaXfHgfMdkvPLX5yWn4Rs_QzZ6AYuGtZcmSAuWc-L0mJC3qY3A3A/exec';
+const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbzsVUopL39LWmJpYpBdWtQrDSto-pCe9syQWIzqhWNbQWMGMAXNU6fAjaQBf2L5_pT4pQ/exec';
 
 // ─── キャッシュ（TTL: 60秒） ───
 const cache = {};
