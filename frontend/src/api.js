@@ -1,79 +1,116 @@
 /**
- * Google Apps Script Web App API クライアント
+ * Vercel API クライアント
  *
- * GAS のデプロイURLを localStorage に保存し、
- * そこに対してリクエストを送る。
+ * Vercel API Routes に対してリクエストを送る。
+ * レスポンスはメモリキャッシュ（TTL付き）で高速化。
  */
 
-const STORAGE_KEY = 'kimiiro_gas_url';
-const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbzsBss6H_YknWEQ9UgaXfHgfMdkvPLX5yWn4Rs_QzZ6AYuGtZcmSAuWc-L0mJC3qY3A3A/exec';
+// ─── キャッシュ（TTL: 60秒） ───
+const cache = {};
+const CACHE_TTL = 60 * 1000;
 
-export function getGasUrl() {
-  return localStorage.getItem(STORAGE_KEY) || DEFAULT_GAS_URL;
+function getCached(key) {
+  const entry = cache[key];
+  if (entry && Date.now() - entry.ts < CACHE_TTL) return entry.data;
+  return null;
 }
 
-export function setGasUrl(url) {
-  localStorage.setItem(STORAGE_KEY, url);
+function setCache(key, data) {
+  cache[key] = { data, ts: Date.now() };
+}
+
+export function clearCache() {
+  for (const key in cache) delete cache[key];
 }
 
 export function isConfigured() {
-  return !!getGasUrl();
+  return true;
 }
 
-async function gasGet(params) {
-  const url = getGasUrl();
-  if (!url) throw new Error('APIのURLが設定されていません。設定画面でURLを入力してください。');
+// ─── HTTP ───
 
-  const query = new URLSearchParams(params).toString();
-  const res = await fetch(`${url}?${query}`, {
-    method: 'GET',
-    redirect: 'follow',
-  });
+async function apiGet(path, params, cacheKey) {
+  if (cacheKey) {
+    const cached = getCached(cacheKey);
+    if (cached) return cached;
+  }
+
+  const query = params ? '?' + new URLSearchParams(params).toString() : '';
+  const res = await fetch(`/api/${path}${query}`);
 
   if (!res.ok) {
-    throw new Error('APIエラーが発生しました');
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || 'APIエラーが発生しました');
   }
-  return res.json();
+  const data = await res.json();
+
+  if (cacheKey) setCache(cacheKey, data);
+  return data;
 }
 
-async function gasPost(body) {
-  const url = getGasUrl();
-  if (!url) throw new Error('APIのURLが設定されていません。設定画面でURLを入力してください。');
-
-  const res = await fetch(url, {
+async function apiPost(path, body) {
+  const res = await fetch(`/api/${path}`, {
     method: 'POST',
-    redirect: 'follow',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   });
 
   if (!res.ok) {
-    throw new Error('APIエラーが発生しました');
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || 'APIエラーが発生しました');
   }
+  clearCache();
   return res.json();
 }
 
+async function apiPut(path, params, body) {
+  const query = params ? '?' + new URLSearchParams(params).toString() : '';
+  const res = await fetch(`/api/${path}${query}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || 'APIエラーが発生しました');
+  }
+  clearCache();
+  return res.json();
+}
+
+async function apiDelete(path, params) {
+  const query = params ? '?' + new URLSearchParams(params).toString() : '';
+  const res = await fetch(`/api/${path}${query}`, {
+    method: 'DELETE',
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || 'APIエラーが発生しました');
+  }
+  clearCache();
+  return res.json();
+}
+
+// ─── API ───
+
 export const api = {
-  // Characters
-  getCharacters: (status) => gasGet({ action: 'characters', status: status || '' }),
-  getCharacter: (id) => gasGet({ action: 'character', id }),
-  createCharacter: (data) => gasPost({ action: 'createCharacter', data }),
-  updateCharacter: (id, data) => gasPost({ action: 'updateCharacter', id, data }),
-  deleteCharacter: (id) => gasPost({ action: 'deleteCharacter', id }),
+  getDashboard: () => apiGet('dashboard', null, 'dashboard'),
 
-  // Records
-  getRecords: (charId, limit) => gasGet({ action: 'records', character_id: charId, limit: limit || '' }),
-  createRecord: (data) => gasPost({ action: 'createRecord', data }),
+  getCharacters: (status) => apiGet('characters', status ? { status } : null, `characters_${status || 'all'}`),
+  getCharacter: (id) => apiGet('characters', { id }, `character_${id}`),
+  createCharacter: (data) => apiPost('characters', data),
+  updateCharacter: (id, data) => apiPut('characters', { id }, data),
+  deleteCharacter: (id) => apiDelete('characters', { id }),
 
-  // Stats & Rankings
-  getStats: () => gasGet({ action: 'stats' }),
-  getRankings: (period) => gasGet({ action: 'rankings', period: period || 'week' }),
+  getRecords: (charId, limit) => apiGet('records', { character_id: charId, ...(limit ? { limit } : {}) }, `records_${charId}_${limit || 'all'}`),
+  createRecord: (data) => apiPost('records', data),
 
-  // Export
-  exportCsv: () => {
-    const url = getGasUrl();
-    return url ? `${url}?action=export` : '#';
-  },
+  getStats: () => apiGet('stats', null, 'stats'),
+  getRankings: (period) => apiGet('rankings', { period: period || 'week' }, `rankings_${period || 'week'}`),
 
-  // Seed
-  seed: () => gasPost({ action: 'seed' }),
+  exportCsv: () => '/api/export',
+
+  seed: () => apiPost('seed', {}),
 };

@@ -1,11 +1,15 @@
 {
   "name": "kimiiro-tiktok-dashboard",
-  "version": "1.0.0",
-  "description": "キミイロ TikTok成長ダッシュボード",
+  "version": "2.0.0",
+  "description": "キミイロ TikTok成長ダッシュボード (Vercel + Supabase)",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "backend": "cd backend && node server.js",
-    "frontend": "cd frontend && npm run dev",
-    "dev": "echo 'Run backend and frontend in separate terminals:\n  npm run backend\n  npm run frontend'"
+    "dev": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build",
+    "vercel-dev": "vercel dev"
   },
-  "private": true
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.0"
+  }
 }

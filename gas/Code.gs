@@ -53,13 +53,22 @@ function getSheet(name) {
   return ss.getSheetByName(name);
 }
 
+function toDateStr(val) {
+  if (val instanceof Date) {
+    return Utilities.formatDate(val, Session.getScriptTimeZone(), 'yyyy-MM-dd');
+  }
+  return String(val);
+}
+
 function sheetToArray(sheet) {
   const data = sheet.getDataRange().getValues();
   if (data.length <= 1) return [];
   const headers = data[0];
   return data.slice(1).map(row => {
     const obj = {};
-    headers.forEach((h, i) => { obj[h] = row[i]; });
+    headers.forEach((h, i) => {
+      obj[h] = (h === 'record_date' || h === 'start_date') ? toDateStr(row[i]) : row[i];
+    });
     return obj;
   });
 }
@@ -73,11 +82,12 @@ function jsonResponse(data) {
 // ─── GET リクエスト処理 ───
 
 function doGet(e) {
-  initSheets();
   const action = e.parameter.action || 'stats';
 
   try {
     switch (action) {
+      case 'dashboard':
+        return jsonResponse(getDashboard(e.parameter.status));
       case 'characters':
         return jsonResponse(getCharacters(e.parameter.status));
       case 'character':
@@ -101,7 +111,6 @@ function doGet(e) {
 // ─── POST リクエスト処理 ───
 
 function doPost(e) {
-  initSheets();
   const body = JSON.parse(e.postData.contents);
   const action = body.action;
 
@@ -125,6 +134,65 @@ function doPost(e) {
   }
 }
 
+// ─── Dashboard (stats + characters を1回のシート読み込みで返す) ───
+
+function getDashboard() {
+  const chars = sheetToArray(getSheet('Characters'));
+  const records = sheetToArray(getSheet('Records'));
+
+  // Build record lookup by character_id (1回だけ走査)
+  const recordsByChar = {};
+  records.forEach(r => {
+    if (!recordsByChar[r.character_id]) recordsByChar[r.character_id] = [];
+    recordsByChar[r.character_id].push(r);
+  });
+  // Sort each group once
+  for (const key in recordsByChar) {
+    recordsByChar[key].sort((a, b) => b.record_date.localeCompare(a.record_date));
+  }
+
+  let totalFollowers = 0;
+  let weeklyGain = 0;
+  const activeAccounts = chars.filter(c => c.status === '運用中').length;
+
+  const characters = chars.map(c => {
+    const charRecords = recordsByChar[c.id] || [];
+    const latest = charRecords[0];
+    const prev = charRecords[1];
+    const first = charRecords[charRecords.length - 1];
+
+    const latestFollowers = latest ? Number(latest.follower_count) : 0;
+    const prevFollowers = prev ? Number(prev.follower_count) : 0;
+    const firstFollowers = first ? Number(first.follower_count) : 0;
+    const change = latestFollowers - prevFollowers;
+    const changeRate = prevFollowers > 0 ? ((change / prevFollowers) * 100).toFixed(1) : '0';
+
+    totalFollowers += latestFollowers;
+    if (latest && prev) weeklyGain += change;
+
+    return {
+      ...c,
+      latest_followers: latestFollowers,
+      prev_followers: prevFollowers,
+      first_followers: firstFollowers,
+      latest_record_date: latest ? latest.record_date : '',
+      change: change,
+      change_rate: changeRate,
+      total_gained: latestFollowers - firstFollowers,
+    };
+  }).sort((a, b) => b.latest_followers - a.latest_followers);
+
+  return {
+    stats: {
+      totalAccounts: chars.length,
+      activeAccounts: activeAccounts,
+      totalFollowers: totalFollowers,
+      weeklyGain: weeklyGain,
+    },
+    characters: characters,
+  };
+}
+
 // ─── Characters ───
 
 function getCharacters(statusFilter) {
@@ -139,7 +207,7 @@ function getCharacters(statusFilter) {
   return filtered.map(c => {
     const charRecords = records
       .filter(r => r.character_id === c.id)
-      .sort((a, b) => String(b.record_date).localeCompare(String(a.record_date)));
+      .sort((a, b) => b.record_date.localeCompare(a.record_date));
 
     const latest = charRecords[0];
     const prev = charRecords[1];
@@ -254,7 +322,7 @@ function deleteCharacter(id) {
 function getRecords(characterId, limit) {
   const records = sheetToArray(getSheet('Records'))
     .filter(r => r.character_id === characterId)
-    .sort((a, b) => String(b.record_date).localeCompare(String(a.record_date)));
+    .sort((a, b) => b.record_date.localeCompare(a.record_date));
 
   const result = (limit ? records.slice(0, Number(limit)) : records).map((r, i, arr) => {
     const prev = arr[i + 1];
@@ -296,7 +364,7 @@ function createRecord(data) {
 
   for (let i = 1; i < allData.length; i++) {
     if (allData[i][charIdCol] === data.character_id &&
-        String(allData[i][dateCol]) === String(data.record_date)) {
+        toDateStr(allData[i][dateCol]) === String(data.record_date)) {
       sheet.getRange(i + 1, countCol + 1).setValue(count);
       sheet.getRange(i + 1, noteCol + 1).setValue(data.note || '');
       return { success: true, updated: true };
@@ -324,7 +392,7 @@ function getStats() {
   chars.forEach(c => {
     const charRecords = records
       .filter(r => r.character_id === c.id)
-      .sort((a, b) => String(b.record_date).localeCompare(String(a.record_date)));
+      .sort((a, b) => b.record_date.localeCompare(a.record_date));
 
     const latest = charRecords[0];
     const prev = charRecords[1];
@@ -346,7 +414,7 @@ function getRankings(period) {
   const rankings = chars.map(c => {
     const charRecords = records
       .filter(r => r.character_id === c.id)
-      .sort((a, b) => String(b.record_date).localeCompare(String(a.record_date)));
+      .sort((a, b) => b.record_date.localeCompare(a.record_date));
 
     if (charRecords.length < 2) {
       return { ...c, gain: 0, gain_rate: 0 };
@@ -380,7 +448,7 @@ function getRankings(period) {
 function exportCsv() {
   const chars = sheetToArray(getSheet('Characters'));
   const records = sheetToArray(getSheet('Records'))
-    .sort((a, b) => String(b.record_date).localeCompare(String(a.record_date)));
+    .sort((a, b) => b.record_date.localeCompare(a.record_date));
 
   let csv = 'キャラクター名,TikTokID,記録日,フォロワー数,メモ\n';
   records.forEach(r => {
@@ -399,6 +467,7 @@ function exportCsv() {
 // ─── サンプルデータ投入 ───
 
 function seedData() {
+  initSheets();
   const chars = sheetToArray(getSheet('Characters'));
   if (chars.length > 0) {
     return { message: 'データは既に存在します' };

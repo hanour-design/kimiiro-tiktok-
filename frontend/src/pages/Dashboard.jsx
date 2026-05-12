@@ -19,31 +19,44 @@ function formatChange(change, rate) {
 
 export default function Dashboard() {
   const [stats, setStats] = useState(null);
-  const [characters, setCharacters] = useState([]);
+  const [allCharacters, setAllCharacters] = useState([]);
   const [filter, setFilter] = useState('運用中');
   const [sortBy, setSortBy] = useState('followers');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadData();
-  }, [filter]);
+  }, []);
 
   async function loadData() {
     setLoading(true);
     try {
-      const [statsData, charsData] = await Promise.all([
-        api.getStats(),
-        api.getCharacters(filter === 'all' ? 'all' : filter),
-      ]);
-      setStats(statsData);
-      setCharacters(charsData);
+      const data = await api.getDashboard();
+      if (data && data.stats) {
+        setStats(data.stats);
+        setAllCharacters(data.characters || []);
+      } else if (data && data.error) {
+        console.error('API error:', data.error);
+        // フォールバック: 旧エンドポイントを試行
+        const [statsData, charsData] = await Promise.all([
+          api.getStats(),
+          api.getCharacters('all'),
+        ]);
+        setStats(statsData);
+        setAllCharacters(Array.isArray(charsData) ? charsData : []);
+      }
     } catch (err) {
       console.error(err);
     }
     setLoading(false);
   }
 
-  const sorted = [...characters].sort((a, b) => {
+  // フィルターはローカルで処理（APIを再コールしない）
+  const filtered = filter === 'all'
+    ? allCharacters
+    : allCharacters.filter(c => c.status === filter);
+
+  const sorted = [...filtered].sort((a, b) => {
     if (sortBy === 'followers') return (b.latest_followers || 0) - (a.latest_followers || 0);
     if (sortBy === 'rate') return parseFloat(b.change_rate || 0) - parseFloat(a.change_rate || 0);
     if (sortBy === 'name') return a.name.localeCompare(b.name, 'ja');
@@ -58,7 +71,7 @@ export default function Dashboard() {
     <div className="dashboard">
       {stats && stats.totalAccounts === 0 && (
         <div className="seed-banner">
-          <p>データがありません。<Link to="/settings">設定画面</Link>からサンプルデータを投入できます。</p>
+          <p>データがありません。</p>
         </div>
       )}
 

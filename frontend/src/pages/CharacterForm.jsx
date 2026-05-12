@@ -24,16 +24,18 @@ export default function CharacterForm() {
   useEffect(() => {
     if (isEdit) {
       api.getCharacter(id).then(data => {
-        setForm({
-          name: data.name,
-          tiktok_id: data.tiktok_id,
-          tiktok_display_name: data.tiktok_display_name || '',
-          purpose: data.purpose || 'メインアカウント',
-          status: data.status || '運用中',
-          start_date: data.start_date || '',
-          note: data.note || '',
-        });
-      });
+        if (data && !data.error) {
+          setForm({
+            name: data.name,
+            tiktok_id: data.tiktok_id,
+            tiktok_display_name: data.tiktok_display_name || '',
+            purpose: data.purpose || 'メインアカウント',
+            status: data.status || '運用中',
+            start_date: data.start_date || '',
+            note: data.note || '',
+          });
+        }
+      }).catch(err => setError(err.message));
     }
   }, [id, isEdit]);
 

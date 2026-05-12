@@ -27,9 +27,6 @@ export default function Header() {
           <Link to="/records/new" className={`nav-link ${location.pathname.startsWith('/records') ? 'active' : ''}`}>
             記録入力
           </Link>
-          <Link to="/settings" className={`nav-link ${location.pathname === '/settings' ? 'active' : ''}`}>
-            設定
-          </Link>
         </nav>
       </div>
     </header>
